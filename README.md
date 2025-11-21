@@ -34,10 +34,12 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 
 - GitHub account with Codespaces access
 - Required secrets configured in your repository:
-  - `MAGENTO_COMPOSER_AUTH_USER`: Adobe Commerce Marketplace username
-  - `MAGENTO_COMPOSER_AUTH_PASS`: Adobe Commerce Marketplace password
   - `HYVA_LICENCE_KEY`: Hyvä license key (token for authentication)
   - `HYVA_PROJECT_NAME`: Hyvä project name for Packagist repository access
+
+- Optional secrets (only needed if `USE_MAGEOS=NO`):
+  - `MAGENTO_COMPOSER_AUTH_USER`: Adobe Commerce Marketplace username
+  - `MAGENTO_COMPOSER_AUTH_PASS`: Adobe Commerce Marketplace password
 
 
 ## Getting Started
@@ -56,13 +58,15 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
    - Configures and starts Supervisor services (Nginx, MariaDB, Redis, PHP-FPM)
    - Waits for MySQL and OpenSearch to become ready
    - Installs Node.js using `n` package manager
-   - Runs `composer install` to fetch Magento dependencies
-   - Installs fresh Magento instance or uses existing database
-   - Configures Magento with Redis for sessions, cache, and page cache
+   - Creates project using `composer create-project`:
+     - **If `USE_MAGEOS=YES`**: Installs Mage-OS from https://repo.mage-os.org/
+     - **If `USE_MAGEOS=NO`**: Installs Magento from https://repo.magento.com/
+   - Installs fresh instance or uses existing database
+   - Configures with Redis for sessions, cache, and page cache
    - Configures OpenSearch as the search engine
    - Installs Awesome Claude Agents from GitHub
    - Patches X-frame-options for quick view support
-   - Builds the Hyvä theme
+   - Builds the Hyvä theme (if license key provided)
    - Creates `.devcontainer/db-installed.flag` to skip reinstall on subsequent starts
 
 3. **Access your store**:
@@ -268,6 +272,25 @@ Then restart the Codespace. The `start.sh` script will detect the missing flag a
 
 ## Advanced Configuration
 
+### Choosing Between Mage-OS and Magento
+
+By default, this environment installs **Mage-OS** (set via `USE_MAGEOS=YES`). To install Magento instead:
+
+1. Edit `.devcontainer/devcontainer.json`:
+   ```json
+   "USE_MAGEOS": "NO"
+   ```
+
+2. Ensure you have configured the required Magento Composer credentials:
+   - `MAGENTO_COMPOSER_AUTH_USER`
+   - `MAGENTO_COMPOSER_AUTH_PASS`
+
+**Key Differences**:
+- **Mage-OS**: Community-driven fork, no Adobe Marketplace access by default
+- **Magento**: Official Adobe version, requires Marketplace credentials, access to Marketplace extensions
+
+**Note**: If using Mage-OS and you need Marketplace extensions, you'll need to configure `repo.magento.com` separately with appropriate credentials.
+
 ### Changing Magento Version
 Edit `.devcontainer/devcontainer.json` and modify:
 ```json
@@ -290,8 +313,9 @@ composer config repositories.custom-repo vcs https://github.com/your/repo
 All environment variables can be customized in `.devcontainer/devcontainer.json` under `containerEnv`:
 
 **Key Environment Variables**:
+- `USE_MAGEOS` - Set to "YES" for Mage-OS, "NO" for Magento (default: "YES")
 - `INSTALL_MAGENTO` - Set to "YES" for fresh install, "NO" to use existing database (default: "YES")
-- `MAGENTO_VERSION` - Magento version to install (default: "2.4.7-p5")
+- `MAGENTO_VERSION` - Magento version to install when `USE_MAGEOS=NO` (default: "2.4.7-p5")
 - `MAGENTO_ADMIN_USERNAME` - Admin username (default: "admin")
 - `MAGENTO_ADMIN_PASSWORD` - Admin password (default: "password1")
 - `MAGENTO_ADMIN_EMAIL` - Admin email (default: "admin@example.com")

@@ -16,7 +16,8 @@
       "MAGENTO_ADMIN_PASSWORD": "password1",
       "MAGENTO_ADMIN_EMAIL": "admin@example.com",
       "MYSQL_ROOT_PASSWORD": "password",
-      "INSTALL_MAGENTO": "YES"
+      "INSTALL_MAGENTO": "YES",
+      "INSTALL_SAMPLE_DATA": "YES"
     },
 	"forwardPorts": [8080, 3306, 6379, 1025, 8025, 9200],
 	"portsAttributes": {

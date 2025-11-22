@@ -26,6 +26,10 @@ if ! timeout 60 bash -c 'until sudo mysqladmin ping --silent; do echo "Waiting..
 fi
 echo "MySQL is ready!"
 
+# Configure MySQL root user with password
+echo "Configuring MySQL root user..."
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}'; FLUSH PRIVILEGES;" 2>/dev/null || true
+
 # Wait for OpenSearch
 echo "Waiting for OpenSearch to be ready..."
 if ! timeout 120 bash -c 'until curl -s -f http://localhost:9200/_cluster/health?wait_for_status=yellow > /dev/null; do echo "Waiting..." && sleep 5; done'; then

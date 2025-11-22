@@ -53,6 +53,7 @@ if [ -f ".devcontainer/db-installed.flag" ]; then
     echo "Running Hyvä Build"
     n98-magerun2 dev:theme:build-hyva frontend/Hyva/default
   fi;
+  show_ready_message
   exit 0
 else
     sudo npm install -g n
@@ -66,29 +67,46 @@ else
         echo "Updating PHP Memory Limit"
         echo "memory_limit=2G" | sudo tee -a /usr/local/etc/php/conf.d/docker-fpm.ini
 
+        # Create project in temp directory then move files
+        TEMP_DIR=$(mktemp -d)
+        echo "Using temporary directory: ${TEMP_DIR}"
+
         if [ "${USE_MAGEOS}" = "YES" ]; then
             echo "Installing Mage-OS from https://repo.mage-os.org/"
-            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ mage-os/project-community-edition . --no-interaction --ignore-platform-reqs
+            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ mage-os/project-community-edition ${TEMP_DIR} --no-interaction --ignore-platform-reqs --no-audit
         else
             echo "Installing Magento from https://repo.magento.com/"
             if [ -n "${MAGENTO_COMPOSER_AUTH_USER}" ] && [ -n "${MAGENTO_COMPOSER_AUTH_PASS}" ]; then
                 ${COMPOSER_COMMAND} config --global http-basic.repo.magento.com ${MAGENTO_COMPOSER_AUTH_USER} ${MAGENTO_COMPOSER_AUTH_PASS}
             fi
-            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} . --no-interaction --ignore-platform-reqs
+            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} ${TEMP_DIR} --no-interaction --ignore-platform-reqs --no-audit
         fi
+
+        echo "Moving files from temporary directory to project root..."
+        # Move all files except .git and .devcontainer
+        shopt -s dotglob
+        for file in ${TEMP_DIR}/*; do
+            filename=$(basename "$file")
+            if [ "$filename" != ".git" ] && [ "$filename" != ".devcontainer" ]; then
+                mv "$file" ./ 2>/dev/null || echo "Skipping $filename"
+            fi
+        done
+        shopt -u dotglob
+        rm -rf ${TEMP_DIR}
+        echo "Project files moved successfully"
         
     else
         echo "**** composer.json exists, running composer install ****"
         echo "Updating PHP Memory Limit"
         echo "memory_limit=2G" | sudo tee -a /usr/local/etc/php/conf.d/docker-fpm.ini
-        ${COMPOSER_COMMAND} install --no-dev --optimize-autoloader --ignore-platform-reqs
+        ${COMPOSER_COMMAND} install --no-dev --optimize-autoloader --ignore-platform-reqs --no-audit
     fi
 
     if [ "${INSTALL_MAGENTO}" = "YES" ] && [ "${HYVA_LICENCE_KEY}" ]; then
         echo "**** Configuring Hyvä Theme ****"
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
-        ${COMPOSER_COMMAND} require hyva-themes/magento2-default-theme
+        ${COMPOSER_COMMAND} require hyva-themes/magento2-default-theme --no-audit
     fi
 
 
@@ -159,14 +177,21 @@ fi;
   # unzip -o ${CODESPACES_REPO_ROOT}/bam_media.zip -d ${CODESPACES_REPO_ROOT}/pub/ && rm ./bam_media.zip
 fi
 
-echo "============ Environment Ready =========="
-echo "All services started successfully!"
-echo "You can check service status with: .devcontainer/scripts/status.sh"
-echo "And Docker containers with: docker ps"
-echo "Have an awesome time!"
+show_ready_message
 
 touch "${CODESPACES_REPO_ROOT}/.devcontainer/db-installed.flag"
 
 if [ "${HYVA_LICENCE_KEY}" ]; then
   n98-magerun2 dev:theme:build-hyva frontend/Hyva/default
 fi;
+
+# ======================================================================================
+# Environment Ready Message
+# ======================================================================================
+show_ready_message() {
+  echo "============ Environment Ready =========="
+  echo "All services started successfully!"
+  echo "You can check service status with: .devcontainer/scripts/status.sh"
+  echo "And Docker containers with: docker ps"
+  echo "Have an awesome time! 💙 Develo.co.uk"
+}

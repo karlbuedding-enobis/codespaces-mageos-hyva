@@ -30,6 +30,10 @@ echo "MySQL is ready!"
 echo "Configuring MySQL root user..."
 sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}'; FLUSH PRIVILEGES;" 2>/dev/null || true
 
+# Grant root access from any host for PHPMyAdmin
+echo "Granting MySQL root access from any host..."
+sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;" 2>/dev/null || true
+
 # Wait for OpenSearch
 echo "Waiting for OpenSearch to be ready..."
 if ! timeout 120 bash -c 'until curl -s -f http://localhost:9200/_cluster/health?wait_for_status=yellow > /dev/null; do echo "Waiting..." && sleep 5; done'; then

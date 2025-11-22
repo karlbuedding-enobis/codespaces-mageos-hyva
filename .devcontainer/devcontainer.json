@@ -22,6 +22,7 @@
 	"forwardPorts": [8080, 3306, 6379, 1025, 8025, 9200],
 	"portsAttributes": {
 	  "8080": { "label": "Mage-OS/Magento" },
+    "8081": { "label": "PHP MyAdmin" },
 	  "3306": { "label": "MySQL" },
 	  "6379": { "label": "Redis" },
 	  "1025": { "label": "Mailpit SMTP" },

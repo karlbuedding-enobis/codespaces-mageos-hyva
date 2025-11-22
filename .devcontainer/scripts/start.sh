@@ -172,23 +172,6 @@ else
         echo "**** Sample data deployed successfully ****"
     fi
 
-    if [ "${INSTALL_MAGENTO}" = "YES" ] && [ "${HYVA_LICENCE_KEY}" ]; then
-        echo "**** Configuring Hyvä Theme ****"
-        ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
-        ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
-        ${COMPOSER_COMMAND} require hyva-themes/magento2-default-theme
-
-        echo "**** Activating Hyvä Theme ****"
-        # Run setup:upgrade to register the new theme
-        php -d memory_limit=-1 bin/magento setup:upgrade
-
-        # Set Hyva as the active theme
-        php -d memory_limit=-1 bin/magento config:set design/theme/theme_id 5 --scope=default --scope-code=0
-
-        echo "Hyvä theme installed and activated"
-    fi
-
-
    # Decide whether to run a fresh install or import a database
    if [ "${INSTALL_MAGENTO}" = "YES" ]; then
     echo "============ Installing New ${PLATFORM_NAME} Instance ============"
@@ -234,6 +217,23 @@ else
       echo "============ Running setup:upgrade to install sample data =========="
       php -d memory_limit=-1 bin/magento setup:upgrade
     fi
+
+    if [ "${HYVA_LICENCE_KEY}" ]; then
+        echo "**** Configuring Hyvä Theme ****"
+        ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
+        ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
+        ${COMPOSER_COMMAND} require hyva-themes/magento2-default-theme
+
+        echo "**** Activating Hyvä Theme ****"
+        # Run setup:upgrade to register the new theme
+        php -d memory_limit=-1 bin/magento setup:upgrade
+
+        # Set Hyva as the active theme
+        php -d memory_limit=-1 bin/magento config:set design/theme/theme_id 5 --scope=default --scope-code=0
+
+        echo "Hyvä theme installed and activated"
+    fi
+
 else
   echo "============ ${PLATFORM_NAME} is installed, copying CS env.php ============"
   cp ${CODESPACES_REPO_ROOT}/.devcontainer/config/env.php ${CODESPACES_REPO_ROOT}/app/etc/env.php

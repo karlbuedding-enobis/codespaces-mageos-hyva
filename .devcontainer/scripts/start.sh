@@ -247,20 +247,6 @@ fi;
   php -d memory_limit=-1 bin/magento indexer:reindex
   php -d memory_limit=-1 bin/magento cache:flush
 
-  # Fix permissions after Magento installation/configuration
-  echo "Setting proper file permissions after Magento setup..."
-  # Read permissions for nginx (nobody user)
-  sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} \; 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} \; 2>/dev/null || true
-
-  # Write permissions for PHP-FPM (vscode user) on writable directories
-  echo "Setting ownership and permissions for writable directories..."
-  sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true
-
-  echo "File permissions updated successfully"
-
   # Install Claude agents
   git clone https://github.com/rubenzantingh/claude-code-magento-agents
   mkdir -p ~/.claude/agents
@@ -299,6 +285,21 @@ if [ "${HYVA_LICENCE_KEY}" ]; then
 
   echo "Hyvä theme fully configured and ready"
 fi;
+
+  # Fix permissions after Magento installation/configuration
+  echo "Setting proper file permissions after Magento setup..."
+  # Read permissions for nginx (nobody user)
+  sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} \; 2>/dev/null || true
+  sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} \; 2>/dev/null || true
+
+  # Write permissions for PHP-FPM (vscode user) on writable directories
+  echo "Setting ownership and permissions for writable directories..."
+  sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
+  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
+  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true
+
+  echo "File permissions updated successfully"
+
 
 # ======================================================================================
 # Environment Ready Message

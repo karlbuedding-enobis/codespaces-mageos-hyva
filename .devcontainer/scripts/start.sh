@@ -69,6 +69,11 @@ if [ -d "${CODESPACES_REPO_ROOT}/pub" ]; then
 
     # Write permissions for PHP-FPM (vscode user) on writable directories
     echo "Setting ownership and permissions for writable directories..."
+
+    # Ensure critical directories exist for developer mode
+    mkdir -p "${CODESPACES_REPO_ROOT}/var/view_preprocessed" 2>/dev/null || true
+    mkdir -p "${CODESPACES_REPO_ROOT}/var/page_cache" 2>/dev/null || true
+
     sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
     sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
     sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true
@@ -241,6 +246,7 @@ else
 fi;
   php -d memory_limit=-1 bin/magento deploy:mode:set developer
   php -d memory_limit=-1 bin/magento setup:di:compile
+  php -d memory_limit=-1 bin/magento module:disable Magento_TwoFactorAuth
   php -d memory_limit=-1 bin/magento config:set catalog/search/engine opensearch
   php -d memory_limit=-1 bin/magento config:set catalog/search/opensearch_server_hostname localhost
   php -d memory_limit=-1 bin/magento config:set catalog/search/opensearch_server_port 9200
@@ -294,6 +300,11 @@ fi;
 
   # Write permissions for PHP-FPM (vscode user) on writable directories
   echo "Setting ownership and permissions for writable directories..."
+
+  # Ensure critical directories exist for developer mode
+  mkdir -p "${CODESPACES_REPO_ROOT}/var/view_preprocessed" 2>/dev/null || true
+  mkdir -p "${CODESPACES_REPO_ROOT}/var/page_cache" 2>/dev/null || true
+
   sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
   sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
   sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true

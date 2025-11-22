@@ -240,6 +240,7 @@ else
   sed -i "s|codespaces.domain|https://${CODESPACE_NAME}-8080.app.github.dev|g" ${CODESPACES_REPO_ROOT}/app/etc/env.php
 fi;
   php -d memory_limit=-1 bin/magento deploy:mode:set developer
+  php -d memory_limit=-1 bin/magento setup:di:compile
   php -d memory_limit=-1 bin/magento config:set catalog/search/engine opensearch
   php -d memory_limit=-1 bin/magento config:set catalog/search/opensearch_server_hostname localhost
   php -d memory_limit=-1 bin/magento config:set catalog/search/opensearch_server_port 9200
@@ -265,6 +266,9 @@ fi;
   mkdir -p ~/.claude/agents
   cp -r "$(pwd)/claude-code-magento-agents/" ~/.claude/agents
   rm -rf ./claude-code-magento-agents
+
+  # Add mage alias for bin/magento
+  echo "alias mage='bin/magento'" >> ~/.bashrc
 
   ## MISC
   echo "Patch the X-frame-options to allow quick view"

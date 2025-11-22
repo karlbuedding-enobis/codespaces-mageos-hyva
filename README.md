@@ -18,6 +18,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 ## Features
 
 - **Flexible Platform Installation**: Choose between Mage-OS or Magento via `USE_MAGEOS` flag
+- **Sample Data Installation**: Optional sample data installation via `INSTALL_SAMPLE_DATA` flag
 - Automated installation and configuration
 - Pre-configured services (Nginx, MariaDB, Redis, OpenSearch)
 - Modular service management with Supervisor and start_services.sh
@@ -61,6 +62,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
    - Creates project using `composer create-project`:
      - **If `USE_MAGEOS=YES`**: Installs Mage-OS from https://repo.mage-os.org/
      - **If `USE_MAGEOS=NO`**: Installs Magento from https://repo.magento.com/
+   - Installs sample data (if `INSTALL_SAMPLE_DATA=YES`)
    - Installs fresh instance or uses existing database
    - Configures with Redis for sessions, cache, and page cache
    - Configures OpenSearch as the search engine
@@ -309,12 +311,33 @@ Edit your `composer.json` or use:
 composer config repositories.custom-repo vcs https://github.com/your/repo
 ```
 
+### Installing Sample Data
+
+Sample data provides products, categories, and content for testing and development. To control sample data installation:
+
+1. Edit `.devcontainer/devcontainer.json`:
+   ```json
+   "INSTALL_SAMPLE_DATA": "YES"
+   ```
+
+2. Or set to `"NO"` to skip sample data installation for a clean, minimal installation.
+
+**What gets installed**:
+- Sample products (bundle, configurable, downloadable, grouped)
+- Sample categories and catalog structure
+- Sample CMS pages and blocks
+- Sample customers and reviews
+- Sample sales data and tax rules
+
+**Note**: Sample data installation adds approximately 5-10 minutes to the initial setup time and requires additional disk space (~500MB).
+
 ### Environment Variables
 All environment variables can be customized in `.devcontainer/devcontainer.json` under `containerEnv`:
 
 **Key Environment Variables**:
 - `USE_MAGEOS` - Set to "YES" for Mage-OS, "NO" for Magento (default: "YES")
 - `INSTALL_MAGENTO` - Set to "YES" for fresh install, "NO" to use existing database (default: "YES")
+- `INSTALL_SAMPLE_DATA` - Set to "YES" to install sample data, "NO" to skip (default: "YES")
 - `MAGENTO_VERSION` - Magento version to install when `USE_MAGEOS=NO` (default: "2.4.7-p5")
 - `MAGENTO_ADMIN_USERNAME` - Admin username (default: "admin")
 - `MAGENTO_ADMIN_PASSWORD` - Admin password (default: "password1")

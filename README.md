@@ -19,15 +19,12 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 
 - **Flexible Platform Installation**: Choose between Mage-OS or Magento via `USE_MAGEOS` flag
 - **Sample Data Installation**: Optional sample data installation via `INSTALL_SAMPLE_DATA` flag
-- Automated installation and configuration
 - Pre-configured services (Nginx, MariaDB, Redis, OpenSearch)
-- Modular service management with Supervisor and start_services.sh
 - Hyvä theme build automation
 - Docker-in-Docker support for additional containers (Mailpit, OpenSearch, phpMyAdmin)
 - n98-magerun2 CLI tool pre-installed
 - AI CLI tools (Gemini CLI, Claude Code) pre-installed
-- Awesome Claude Agents collection auto-installed from GitHub
-- X-frame-options patched for quick view support
+- Magento Claude Agents collection auto-installed
 - Persistent installation detection (skips reinstall on restart)
 - Xdebug pre-installed for debugging
 
@@ -51,23 +48,19 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 
    The setup runs in two phases:
 
-   **Phase 1 - Container Creation** (`setup.sh` via `onCreateCommand`):
+   **Phase 1 - Container Creation** (`setup.sh` via `onCreateCommand` runs during Pre-build if enabled):
    - Installs AI CLI tools (Gemini CLI, Claude Code)
    - Starts Docker containers (Mailpit, OpenSearch, phpMyAdmin)
 
    **Phase 2 - Application Setup** (`start.sh` via `postAttachCommand`):
    - Configures and starts Supervisor services (Nginx, MariaDB, Redis, PHP-FPM)
-   - Waits for MySQL and OpenSearch to become ready
    - Installs Node.js using `n` package manager
    - Creates project using `composer create-project`:
      - **If `USE_MAGEOS=YES`**: Installs Mage-OS from https://repo.mage-os.org/
      - **If `USE_MAGEOS=NO`**: Installs Magento from https://repo.magento.com/
    - Installs sample data (if `INSTALL_SAMPLE_DATA=YES`)
    - Installs fresh instance or uses existing database
-   - Configures with Redis for sessions, cache, and page cache
-   - Configures OpenSearch as the search engine
    - Installs Awesome Claude Agents from GitHub
-   - Patches X-frame-options for quick view support
    - Builds the Hyvä theme (if license key provided)
    - Creates `.devcontainer/db-installed.flag` to skip reinstall on subsequent starts
 
@@ -100,24 +93,6 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 | Mailpit Web | 8025 | Mail testing UI |
 
 ## Common Commands
-
-### Magento CLI
-```bash
-# Clear cache
-bin/magento cache:flush
-
-# Reindex
-bin/magento indexer:reindex
-
-# Deploy static content
-bin/magento setup:static-content:deploy -f
-
-# Enable developer mode
-bin/magento deploy:mode:set developer
-
-# Run setup upgrade
-bin/magento setup:upgrade
-```
 
 ### Hyvä Theme
 ```bash
@@ -172,6 +147,9 @@ mysql -u root -ppassword magento2
 
 # Or use n98-magerun2
 n98-magerun2 db:console
+
+#PHP MyAdmin Port 8081
+https://{{Codespaces-URL}}-8081.app.github.dev/
 ```
 
 ## Configuration Files
@@ -206,6 +184,11 @@ sudo supervisorctl status
 Restart all services:
 ```bash
 sudo supervisorctl restart all
+```
+
+Re-run start script
+```bash
+.devcontainer/scripts/start.sh
 ```
 
 ### Database Connection Issues

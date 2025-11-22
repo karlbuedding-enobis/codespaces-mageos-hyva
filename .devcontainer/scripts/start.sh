@@ -79,8 +79,24 @@ fi
 if [ -f ".devcontainer/db-installed.flag" ]; then
   echo "${PLATFORM_NAME} already installed, skipping installation/import."
   if [ "${HYVA_LICENCE_KEY}" ]; then
-    echo "Running Hyvä Build"
+    echo "Configuring and building Hyvä theme..."
+
+    # Ensure Hyva theme is set as active theme
+    echo "Activating Hyvä theme..."
+    php -d memory_limit=-1 bin/magento config:set design/theme/theme_id 5 --scope=default --scope-code=0
+
+    # Build Hyva theme
+    echo "Building Hyvä theme assets..."
     n98-magerun2 dev:theme:build-hyva frontend/Hyva/default
+
+    # Deploy static content for Hyva theme
+    echo "Deploying static content for Hyvä theme..."
+    php -d memory_limit=-1 bin/magento setup:static-content:deploy -f -t Hyva/default
+
+    # Clear cache
+    php -d memory_limit=-1 bin/magento cache:flush
+
+    echo "Hyvä theme configured successfully"
   fi;
   show_ready_message
   exit 0
@@ -161,6 +177,15 @@ else
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
         ${COMPOSER_COMMAND} require hyva-themes/magento2-default-theme
+
+        echo "**** Activating Hyvä Theme ****"
+        # Run setup:upgrade to register the new theme
+        php -d memory_limit=-1 bin/magento setup:upgrade
+
+        # Set Hyva as the active theme
+        php -d memory_limit=-1 bin/magento config:set design/theme/theme_id 5 --scope=default --scope-code=0
+
+        echo "Hyvä theme installed and activated"
     fi
 
 
@@ -256,7 +281,19 @@ show_ready_message
 touch "${CODESPACES_REPO_ROOT}/.devcontainer/db-installed.flag"
 
 if [ "${HYVA_LICENCE_KEY}" ]; then
+  echo "Final Hyvä theme configuration..."
+
+  # Build Hyva theme assets
   n98-magerun2 dev:theme:build-hyva frontend/Hyva/default
+
+  # Deploy static content for Hyva theme
+  echo "Deploying static content for Hyvä theme..."
+  php -d memory_limit=-1 bin/magento setup:static-content:deploy -f -t Hyva/default
+
+  # Clear cache to ensure theme changes are visible
+  php -d memory_limit=-1 bin/magento cache:flush
+
+  echo "Hyvä theme fully configured and ready"
 fi;
 
 # ======================================================================================

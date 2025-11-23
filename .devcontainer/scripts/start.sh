@@ -56,16 +56,15 @@ sudo cp "${CODESPACES_REPO_ROOT}/.devcontainer/config/mysql.cnf" /etc/mysql/conf
 sudo cp "${CODESPACES_REPO_ROOT}/.devcontainer/config/client.cnf" /etc/mysql/conf.d/
 sudo cp "${CODESPACES_REPO_ROOT}/.devcontainer/config/.gitignore" ${CODESPACES_REPO_ROOT}/.gitignore
 
-source "${CODESPACES_REPO_ROOT}/.devcontainer/scripts/start_services.sh"
-
 cd "${CODESPACES_REPO_ROOT}"
 
-# Fix permissions for nginx/PHP-FPM to access Magento files
+# Fix permissions for nginx/PHP-FPM to access Magento files BEFORE starting services
 echo "Setting proper file permissions for web server access..."
 if [ -d "${CODESPACES_REPO_ROOT}/pub" ]; then
-    # Read permissions for nginx (nobody user)
-    sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} \; 2>/dev/null || true
-    sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} \; 2>/dev/null || true
+    # Read permissions for nginx (nobody user) - using + for efficiency
+    echo "Setting read permissions for nginx worker..."
+    sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} + 2>/dev/null || true
+    sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} + 2>/dev/null || true
 
     # Write permissions for PHP-FPM (vscode user) on writable directories
     echo "Setting ownership and permissions for writable directories..."
@@ -73,13 +72,27 @@ if [ -d "${CODESPACES_REPO_ROOT}/pub" ]; then
     # Ensure critical directories exist for developer mode
     mkdir -p "${CODESPACES_REPO_ROOT}/var/view_preprocessed" 2>/dev/null || true
     mkdir -p "${CODESPACES_REPO_ROOT}/var/page_cache" 2>/dev/null || true
+    mkdir -p "${CODESPACES_REPO_ROOT}/generated" 2>/dev/null || true
 
-    sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
-    sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
-    sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true
+    # Set ownership on writable directories
+    for dir in var generated pub/static pub/media app/etc; do
+        if [ -d "${CODESPACES_REPO_ROOT}/${dir}" ]; then
+            sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/${dir}" 2>/dev/null || true
+            sudo find "${CODESPACES_REPO_ROOT}/${dir}" -type f -exec chmod 664 {} + 2>/dev/null || true
+            sudo find "${CODESPACES_REPO_ROOT}/${dir}" -type d -exec chmod 775 {} + 2>/dev/null || true
+        fi
+    done
+
+    # Ensure bin/magento is executable
+    if [ -f "${CODESPACES_REPO_ROOT}/bin/magento" ]; then
+        sudo chmod +x "${CODESPACES_REPO_ROOT}/bin/magento"
+    fi
 
     echo "File permissions updated successfully"
 fi
+
+# Start services AFTER permissions are set
+source "${CODESPACES_REPO_ROOT}/.devcontainer/scripts/start_services.sh"
 
 if [ -f ".devcontainer/db-installed.flag" ]; then
   echo "${PLATFORM_NAME} already installed, skipping installation/import."
@@ -294,20 +307,33 @@ fi;
 
   # Fix permissions after Magento installation/configuration
   echo "Setting proper file permissions after Magento setup..."
-  # Read permissions for nginx (nobody user)
-  sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} \; 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} \; 2>/dev/null || true
+
+  # Read permissions for nginx (nobody user) - using + for efficiency
+  echo "Setting read permissions for nginx worker..."
+  sudo find "${CODESPACES_REPO_ROOT}" -type d -exec chmod o+rx {} + 2>/dev/null || true
+  sudo find "${CODESPACES_REPO_ROOT}" -type f -exec chmod o+r {} + 2>/dev/null || true
 
   # Write permissions for PHP-FPM (vscode user) on writable directories
   echo "Setting ownership and permissions for writable directories..."
 
-  # Ensure critical directories exist for developer mode
+  # Ensure critical directories exist
   mkdir -p "${CODESPACES_REPO_ROOT}/var/view_preprocessed" 2>/dev/null || true
   mkdir -p "${CODESPACES_REPO_ROOT}/var/page_cache" 2>/dev/null || true
+  mkdir -p "${CODESPACES_REPO_ROOT}/generated" 2>/dev/null || true
 
-  sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type f -exec chmod 664 {} \; 2>/dev/null || true
-  sudo find "${CODESPACES_REPO_ROOT}/var" "${CODESPACES_REPO_ROOT}/generated" "${CODESPACES_REPO_ROOT}/pub/static" "${CODESPACES_REPO_ROOT}/pub/media" "${CODESPACES_REPO_ROOT}/app/etc" -type d -exec chmod 775 {} \; 2>/dev/null || true
+  # Set ownership on writable directories
+  for dir in var generated pub/static pub/media app/etc; do
+      if [ -d "${CODESPACES_REPO_ROOT}/${dir}" ]; then
+          sudo chown -R vscode:vscode "${CODESPACES_REPO_ROOT}/${dir}" 2>/dev/null || true
+          sudo find "${CODESPACES_REPO_ROOT}/${dir}" -type f -exec chmod 664 {} + 2>/dev/null || true
+          sudo find "${CODESPACES_REPO_ROOT}/${dir}" -type d -exec chmod 775 {} + 2>/dev/null || true
+      fi
+  done
+
+  # Ensure bin/magento is executable
+  if [ -f "${CODESPACES_REPO_ROOT}/bin/magento" ]; then
+      sudo chmod +x "${CODESPACES_REPO_ROOT}/bin/magento"
+  fi
 
   echo "File permissions updated successfully"
 

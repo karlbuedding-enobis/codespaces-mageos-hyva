@@ -140,13 +140,13 @@ else
 
         if [ "${USE_MAGEOS}" = "YES" ]; then
             echo "Installing Mage-OS from https://repo.mage-os.org/"
-            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ mage-os/project-community-edition ${TEMP_DIR} --no-interaction --ignore-platform-reqs
+            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ mage-os/project-community-edition ${TEMP_DIR} --no-interaction
         else
             echo "Installing Magento from https://repo.magento.com/"
             if [ -n "${MAGENTO_COMPOSER_AUTH_USER}" ] && [ -n "${MAGENTO_COMPOSER_AUTH_PASS}" ]; then
                 ${COMPOSER_COMMAND} config --global http-basic.repo.magento.com ${MAGENTO_COMPOSER_AUTH_USER} ${MAGENTO_COMPOSER_AUTH_PASS}
             fi
-            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} ${TEMP_DIR} --no-interaction --ignore-platform-reqs
+            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:${MAGENTO_VERSION} ${TEMP_DIR} --no-interaction
         fi
 
         echo "Moving files from temporary directory to project root..."

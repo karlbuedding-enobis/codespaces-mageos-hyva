@@ -115,3 +115,6 @@ RUN curl -fsSL https://get.docker.com -o get-docker.sh && \
 RUN apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Switch to vscode user
+USER vscode

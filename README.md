@@ -12,7 +12,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 - **Mail Testing**: Mailpit
 - **Node.js**: 18.x
 - **Database Management**: phpMyAdmin
-- **Magento Version**: 2.4.7-p5
+- **Magento Version**: MageOs 2.0 | Magento 2.4.7-p5
 - **Theme**: Hyvä
 
 ## Features
@@ -245,8 +245,8 @@ Then restart the Codespace. The `start.sh` script will detect the missing flag a
 
 ## Notes
 
-- The first startup may take 10-15 minutes as it installs Magento and all dependencies
-- Subsequent starts are much faster (2-3 minutes) as the `.devcontainer/db-installed.flag` prevents reinstallation
+- The first startup may take 10-15 minutes as it installs Magento and all dependencies (Enable Pre-builds to cut new installs to 5mins)
+- Subsequent instance starts are much faster (2-3 minutes) as the `.devcontainer/db-installed.flag` prevents reinstallation
 - The environment uses Redis for sessions, cache, and full page cache
 - OpenSearch runs in a Docker container with security disabled for development ease
 - Xdebug is installed but not enabled by default

@@ -314,7 +314,7 @@ if [ "${INSTALL_SAMPLE_DATA}" = "YES" ]; then
 
     if [ -d "$SAMPLE_MEDIA_SOURCE" ] && [ -w "$MEDIA_DEST" ]; then
         echo "Found sample data media. Copying to pub/media..."
-        rsync -a --ignore-existing "${SAMPLE_MEDIA_SOURCE}/" "${MEDIA_DEST}/"
+        rsync -a "${SAMPLE_MEDIA_SOURCE}/" "${MEDIA_DEST}/"
         
         if [ -f "bin/magento" ]; then
             echo "Resizing product images and flushing cache..."

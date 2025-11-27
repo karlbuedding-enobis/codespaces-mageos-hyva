@@ -148,12 +148,10 @@ else
             echo "**** Deploying Mage-OS sample data ****"
             # Mage-OS uses the same sample data as Magento
             ${COMPOSER_COMMAND} require mage-os/module-bundle-sample-data mage-os/module-widget-sample-data mage-os/module-theme-sample-data mage-os/module-catalog-sample-data mage-os/module-customer-sample-data mage-os/module-cms-sample-data mage-os/module-catalog-rule-sample-data mage-os/module-sales-rule-sample-data mage-os/module-review-sample-data mage-os/module-tax-sample-data mage-os/module-sales-sample-data mage-os/module-grouped-product-sample-data mage-os/module-downloadable-sample-data mage-os/module-msrp-sample-data mage-os/module-configurable-sample-data mage-os/module-product-links-sample-data mage-os/module-wishlist-sample-data mage-os/module-swatches-sample-data --no-update
-            ${COMPOSER_COMMAND} update 
-        else
-            echo "**** Deploying Magento sample data ****"
-            php -d memory_limit=-1 bin/magento sampledata:deploy
-            ${COMPOSER_COMMAND} update 
         fi
+        
+        php -d memory_limit=-1 bin/magento sampledata:deploy
+        ${COMPOSER_COMMAND} update 
         echo "**** Sample data deployed successfully ****"
     fi
 

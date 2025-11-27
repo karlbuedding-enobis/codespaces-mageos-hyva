@@ -62,23 +62,5 @@ start_container $PHPMYADMIN_CONTAINER \
     -e PMA_PASSWORD=${MYSQL_ROOT_PASSWORD} \
     phpmyadmin/phpmyadmin
 
-# Fix for missing sample data media files
-SAMPLE_MEDIA_SOURCE="vendor/mage-os/sample-data-media"
-MEDIA_DEST="pub/media"
-
-if [ -d "$SAMPLE_MEDIA_SOURCE" ] && [ -w "$MEDIA_DEST" ]; then
-    echo "Found sample data media. Copying to pub/media..."
-    rsync -a --ignore-existing "${SAMPLE_MEDIA_SOURCE}/" "${MEDIA_DEST}/"
-    
-    # Check if Magento is installed before running commands
-    if [ -f "bin/magento" ]; then
-        echo "Resizing product images and flushing cache..."
-        bin/magento catalog:image:resize
-        bin/magento cache:flush
-        echo "Sample data media fix applied."
-    fi
-else
-    echo "Sample data media source not found or pub/media not writable. Skipping fix."
-fi
 
 echo "============ 2. Setup Complete =========="

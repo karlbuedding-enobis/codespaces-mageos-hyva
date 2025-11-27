@@ -306,6 +306,29 @@ fi;
 
 
 # ======================================================================================
+# Fix for missing sample data media files
+# ======================================================================================
+if [ "${INSTALL_SAMPLE_DATA}" = "YES" ]; then
+    SAMPLE_MEDIA_SOURCE="vendor/mage-os/sample-data-media"
+    MEDIA_DEST="pub/media"
+
+    if [ -d "$SAMPLE_MEDIA_SOURCE" ] && [ -w "$MEDIA_DEST" ]; then
+        echo "Found sample data media. Copying to pub/media..."
+        rsync -a --ignore-existing "${SAMPLE_MEDIA_SOURCE}/" "${MEDIA_DEST}/"
+        
+        if [ -f "bin/magento" ]; then
+            echo "Resizing product images and flushing cache..."
+            php -d memory_limit=-1 bin/magento catalog:image:resize
+            php -d memory_limit=-1 bin/magento cache:flush
+            echo "Sample data media fix applied."
+        fi
+    else
+        echo "Sample data media source not found or pub/media not writable. Skipping fix."
+    fi
+fi
+
+
+# ======================================================================================
 # Environment Ready Message
 # ======================================================================================
 show_ready_message() {

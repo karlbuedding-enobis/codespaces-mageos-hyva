@@ -6,19 +6,6 @@
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2.12.4": {}
     },
-    "containerEnv": {
-      "USE_MAGEOS": "YES",
-      "MAGENTO_COMPOSER_AUTH_USER": "${{ secrets.MAGENTO_COMPOSER_AUTH_USER }}",
-      "MAGENTO_COMPOSER_AUTH_PASS": "${{ secrets.MAGENTO_COMPOSER_AUTH_PASS }}",
-      "HYVA_LICENCE_KEY": "${{ secrets.HYVA_LICENCE_KEY }}",
-      "MAGENTO_VERSION": "2.4.7-p5",
-      "MAGENTO_ADMIN_USERNAME": "admin",
-      "MAGENTO_ADMIN_PASSWORD": "password1",
-      "MAGENTO_ADMIN_EMAIL": "admin@example.com",
-      "MYSQL_ROOT_PASSWORD": "password",
-      "INSTALL_MAGENTO": "YES",
-      "INSTALL_SAMPLE_DATA": "YES"
-    },
 	"forwardPorts": [8080, 8081, 3306, 6379, 1025, 8025, 9200],
 	"portsAttributes": {
 	  "8080": { "label": "Mage-OS/Magento" },

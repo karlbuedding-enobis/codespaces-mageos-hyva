@@ -8,8 +8,8 @@ set -eu
 USE_MAGEOS="${USE_MAGEOS:=YES}"
 INSTALL_MAGENTO="${INSTALL_MAGENTO:=YES}"
 INSTALL_SAMPLE_DATA="${INSTALL_SAMPLE_DATA:=YES}"
-HYVA_LICENCE_KEY="${HYVA_LICENCE_KEY:=''}"
-HYVA_PROJECT_NAME="${HYVA_PROJECT_NAME:=''}"
+HYVA_LICENCE_KEY="${HYVA_LICENCE_KEY:=}"
+HYVA_PROJECT_NAME="${HYVA_PROJECT_NAME:=}"
 CODESPACES_REPO_ROOT="${CODESPACES_REPO_ROOT:=$(pwd)}"
 MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:=password}"
 MAGENTO_ADMIN_USERNAME="${MAGENTO_ADMIN_USERNAME:=admin}"
@@ -64,23 +64,8 @@ source "${CODESPACES_REPO_ROOT}/.devcontainer/scripts/start_services.sh"
 if [ -f ".devcontainer/db-installed.flag" ]; then
   echo "${PLATFORM_NAME} already installed, skipping installation/import."
   if [ "${HYVA_LICENCE_KEY}" ]; then
-    echo "Configuring and building Hyvä theme..."
-
-    # Ensure Hyva theme is set as active theme
-    echo "Activating Hyvä theme..."
-    php -d memory_limit=-1 bin/magento config:set design/theme/theme_id 5 --scope=default --scope-code=0
-
-    # Build Hyva theme
     echo "Building Hyvä theme assets..."
     n98-magerun2 dev:theme:build-hyva frontend/Hyva/default
-
-    # Deploy static content for Hyva theme
-    echo "Deploying static content for Hyvä theme..."
-    php -d memory_limit=-1 bin/magento setup:static-content:deploy -f -t Hyva/default
-
-    # Clear cache
-    php -d memory_limit=-1 bin/magento cache:flush
-
     echo "Hyvä theme configured successfully"
   fi;
   show_ready_message
@@ -203,7 +188,7 @@ else
       php -d memory_limit=-1 bin/magento setup:upgrade
     fi
 
-    if [ "${HYVA_LICENCE_KEY}" ]; then
+    if [ "${HYVA_LICENCE_KEY+x}" ]; then
         echo "**** Configuring Hyvä Theme ****"
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/

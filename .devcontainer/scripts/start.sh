@@ -186,7 +186,7 @@ else
       php -d memory_limit=-1 bin/magento setup:upgrade
     fi
 
-    if [ "${HYVA_LICENCE_KEY+x}" ]; then
+    if [ "${HYVA_LICENCE_KEY}" ]; then
         echo "**** Configuring Hyvä Theme ****"
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/

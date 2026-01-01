@@ -279,7 +279,7 @@ By default, this environment installs **Mage-OS** (set via `USE_MAGEOS=YES`). To
 ### Changing Magento Version
 Edit `.devcontainer/devcontainer.json` and modify:
 ```json
-"MAGENTO_VERSION": "2.4.7-p5"
+"MAGENTO_VERSION": "2.4.8-p3"
 ```
 
 ### Using an Existing Magento Database

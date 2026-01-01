@@ -7,6 +7,7 @@ set -eu
 # ======================================================================================
 USE_MAGEOS="${USE_MAGEOS:=YES}"
 INSTALL_MAGENTO="${INSTALL_MAGENTO:=YES}"
+MAGENTO_VERSION="${MAGENTO_VERSION:=2.4.8-p3}"
 INSTALL_SAMPLE_DATA="${INSTALL_SAMPLE_DATA:=YES}"
 HYVA_LICENCE_KEY="${HYVA_LICENCE_KEY:=}"
 HYVA_PROJECT_NAME="${HYVA_PROJECT_NAME:=}"

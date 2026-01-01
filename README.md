@@ -277,9 +277,9 @@ By default, this environment installs **Mage-OS** (set via `USE_MAGEOS=YES`). To
 **Note**: If using Mage-OS and you need Marketplace extensions, you'll need to configure `repo.magento.com` separately with appropriate credentials.
 
 ### Changing Magento Version
-Edit `.devcontainer/devcontainer.json` and modify:
+Edit `.devcontainer/scripts/setup.php` and modify:
 ```json
-"MAGENTO_VERSION": "2.4.8-p3"
+MAGENTO_VERSION="${MAGENTO_VERSION:=2.4.8-p3}"
 ```
 
 ### Using an Existing Magento Database

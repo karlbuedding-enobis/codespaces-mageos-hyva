@@ -20,7 +20,7 @@
     "postAttachCommand": "bash -c '.devcontainer/scripts/start.sh'"
 	,
 	"containerEnv": {
-	    "PLATFORM": "${localEnv:PLATFORM:mage-os}",
+	    "PLATFORM_NAME": "${localEnv:PLATFORM_NAME:mage-os}",
 		"INSTALL_MAGENTO": "${localEnv:INSTALL_MAGENTO:YES}",
 		"INSTALL_SAMPLE_DATA": "${localEnv:INSTALL_SAMPLE_DATA:YES}",
 	    "HYVA_LICENCE_KEY": "${localEnv:HYVA_LICENCE_KEY:}",

@@ -17,7 +17,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 
 ## Features
 
-- **Flexible Platform Installation**: Choose between Mage-OS or Magento via `PLATFORM_NAME` flag
+- **Flexible Platform Installation**: Choose between Mage-OS or Magento via `PLATFORM_NAME` Env value
 - **Sample Data Installation**: Optional sample data installation via `INSTALL_SAMPLE_DATA` flag
 - Pre-configured services (Nginx, MariaDB, Redis, OpenSearch)
 - Hyvä theme build automation

@@ -5,37 +5,9 @@ set -eu
 # ======================================================================================
 # Environment and Service Configuration
 # ======================================================================================
-USE_MAGEOS="${USE_MAGEOS:=YES}"
-INSTALL_MAGENTO="${INSTALL_MAGENTO:=YES}"
-MAGENTO_VERSION="${MAGENTO_VERSION:=2.4.8-p3}"
-INSTALL_SAMPLE_DATA="${INSTALL_SAMPLE_DATA:=YES}"
-HYVA_LICENCE_KEY="${HYVA_LICENCE_KEY:=}"
-HYVA_PROJECT_NAME="${HYVA_PROJECT_NAME:=}"
 CODESPACES_REPO_ROOT="${CODESPACES_REPO_ROOT:=$(pwd)}"
-MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:=password}"
-MAGENTO_ADMIN_USERNAME="${MAGENTO_ADMIN_USERNAME:=admin}"
-MAGENTO_ADMIN_PASSWORD="${MAGENTO_ADMIN_PASSWORD:=password1}"
-MAGENTO_ADMIN_EMAIL="${MAGENTO_ADMIN_EMAIL:=admin@example.com}"
 COMPOSER_COMMAND="php -d memory_limit=-1 $(which composer)"
 OPENSEARCH_CONTAINER="opensearch-node"
-
-# ======================================================================================
-# Environment Ready Message
-# ======================================================================================
-show_ready_message() {
-  echo "============ Environment Ready =========="
-  echo "All services started successfully!"
-  echo "You can check service status with: .devcontainer/scripts/status.sh"
-  echo "And Docker containers with: docker ps"
-  echo "Have an awesome time! 💙 Develo.co.uk"
-}
-
-# Determine platform name for display
-if [ "${USE_MAGEOS}" = "YES" ]; then
-  PLATFORM_NAME="mage-os"
-else
-  PLATFORM_NAME="magento"
-fi
 
 # ======================================================================================
 # Supervisor Services (Nginx, MariaDB, Redis)
@@ -91,9 +63,9 @@ else
         TEMP_DIR=$(mktemp -d)
         echo "Using temporary directory: ${TEMP_DIR}"
 
-        if [ "${USE_MAGEOS}" = "YES" ]; then
+        if [ "${PLATFORM_NAME}" = "mage-os" ]; then
             echo "Installing Mage-OS from https://repo.mage-os.org/"
-            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ mage-os/project-community-edition ${TEMP_DIR} --no-interaction
+            ${COMPOSER_COMMAND} create-project --repository-url=https://repo.mage-os.org/ ${PLATFORM_NAME}/project-community-edition ${TEMP_DIR} --no-interaction
         else
             echo "Installing Magento from https://repo.magento.com/"
             if [ -n "${MAGENTO_COMPOSER_AUTH_USER}" ] && [ -n "${MAGENTO_COMPOSER_AUTH_PASS}" ]; then
@@ -130,11 +102,8 @@ else
     # Install Sample Data if enabled
     if [ "${INSTALL_SAMPLE_DATA}" = "YES" ]; then
         echo "============ Installing Sample Data =========="
-        if [ "${USE_MAGEOS}" = "YES" ]; then
-            echo "**** Deploying Mage-OS sample data ****"
-            # Mage-OS uses the same sample data as Magento
-            ${COMPOSER_COMMAND} require mage-os/module-bundle-sample-data mage-os/module-widget-sample-data mage-os/module-theme-sample-data mage-os/module-catalog-sample-data mage-os/module-customer-sample-data mage-os/module-cms-sample-data mage-os/module-catalog-rule-sample-data mage-os/module-sales-rule-sample-data mage-os/module-review-sample-data mage-os/module-tax-sample-data mage-os/module-sales-sample-data mage-os/module-grouped-product-sample-data mage-os/module-downloadable-sample-data mage-os/module-msrp-sample-data mage-os/module-configurable-sample-data mage-os/module-product-links-sample-data mage-os/module-wishlist-sample-data mage-os/module-swatches-sample-data --no-update
-        fi
+        echo "**** Deploying ${PLATFORM_NAME} sample data ****"
+        ${COMPOSER_COMMAND} require ${PLATFORM_NAME}/module-bundle-sample-data ${PLATFORM_NAME}/module-widget-sample-data ${PLATFORM_NAME}/module-theme-sample-data ${PLATFORM_NAME}/module-catalog-sample-data ${PLATFORM_NAME}/module-customer-sample-data ${PLATFORM_NAME}/module-cms-sample-data ${PLATFORM_NAME}/module-catalog-rule-sample-data ${PLATFORM_NAME}/module-sales-rule-sample-data ${PLATFORM_NAME}/module-review-sample-data ${PLATFORM_NAME}/module-tax-sample-data ${PLATFORM_NAME}/module-sales-sample-data ${PLATFORM_NAME}/module-grouped-product-sample-data ${PLATFORM_NAME}/module-downloadable-sample-data ${PLATFORM_NAME}/module-msrp-sample-data ${PLATFORM_NAME}/module-configurable-sample-data ${PLATFORM_NAME}/module-product-links-sample-data ${PLATFORM_NAME}/module-wishlist-sample-data ${PLATFORM_NAME}/module-swatches-sample-data --no-update
         
         php -d memory_limit=-1 bin/magento sampledata:deploy
         ${COMPOSER_COMMAND} update 
@@ -187,7 +156,7 @@ else
       php -d memory_limit=-1 bin/magento setup:upgrade
     fi
 
-    if [ "${HYVA_LICENCE_KEY}" ]; then
+    if [ "${HYVA_LICENCE_KEY}" ] && [ "${HYVA_PROJECT_NAME}" ] then
         echo "**** Configuring Hyvä Theme ****"
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
@@ -293,7 +262,7 @@ fi;
 # Fix for missing sample data media files
 # ======================================================================================
 if [ "${INSTALL_SAMPLE_DATA}" = "YES" ]; then
-    SAMPLE_MEDIA_SOURCE="vendor/mage-os/sample-data-media"
+    SAMPLE_MEDIA_SOURCE="vendor/${PLATFORM_NAME}/sample-data-media"
     MEDIA_DEST="pub/media"
 
     if [ -d "$SAMPLE_MEDIA_SOURCE" ] && [ -w "$MEDIA_DEST" ]; then

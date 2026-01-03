@@ -156,7 +156,7 @@ else
       php -d memory_limit=-1 bin/magento setup:upgrade
     fi
 
-    if [ "${HYVA_LICENCE_KEY}" ] && [ "${HYVA_PROJECT_NAME}" ] then
+    if [ "${HYVA_LICENCE_KEY}" ] && [ "${HYVA_PROJECT_NAME}" ]; then
         echo "**** Configuring Hyvä Theme ****"
         ${COMPOSER_COMMAND} config --auth http-basic.hyva-themes.repo.packagist.com token ${HYVA_LICENCE_KEY}
         ${COMPOSER_COMMAND} config repositories.private-packagist composer https://hyva-themes.repo.packagist.com/${HYVA_PROJECT_NAME}/
@@ -176,7 +176,7 @@ else
   echo "============ ${PLATFORM_NAME} is installed, copying CS env.php ============"
   cp ${CODESPACES_REPO_ROOT}/.devcontainer/config/env.php ${CODESPACES_REPO_ROOT}/app/etc/env.php
   sed -i "s|codespaces.domain|https://${CODESPACE_NAME}-8080.app.github.dev|g" ${CODESPACES_REPO_ROOT}/app/etc/env.php
-fi;
+fi
   php -d memory_limit=-1 bin/magento deploy:mode:set developer
   php -d memory_limit=-1 bin/magento setup:di:compile
   php -d memory_limit=-1 bin/magento module:disable Magento_TwoFactorAuth

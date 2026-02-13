@@ -17,7 +17,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
 
 ## Features
 
-- **Flexible Platform Installation**: Choose between Mage-OS or Magento via `USE_MAGEOS` flag
+- **Flexible Platform Installation**: Choose between Mage-OS or Magento via `PLATFORM_NAME` Env value
 - **Sample Data Installation**: Optional sample data installation via `INSTALL_SAMPLE_DATA` flag
 - Pre-configured services (Nginx, MariaDB, Redis, OpenSearch)
 - Hyvä theme build automation
@@ -35,7 +35,7 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
   - `HYVA_LICENCE_KEY`: Hyvä license key (token for authentication)
   - `HYVA_PROJECT_NAME`: Hyvä project name for Packagist repository access
 
-- Optional secrets (only needed if `USE_MAGEOS=NO`):
+- Optional secrets (only needed if `PLATFORM_NAME=magento`):
   - `MAGENTO_COMPOSER_AUTH_USER`: Adobe Commerce Marketplace username
   - `MAGENTO_COMPOSER_AUTH_PASS`: Adobe Commerce Marketplace password
 
@@ -56,8 +56,8 @@ A complete GitHub Codespaces development setup for Mage-OS (Magento Open Source)
    - Configures and starts Supervisor services (Nginx, MariaDB, Redis, PHP-FPM)
    - Installs Node.js using `n` package manager
    - Creates project using `composer create-project`:
-     - **If `USE_MAGEOS=YES`**: Installs Mage-OS from https://repo.mage-os.org/
-     - **If `USE_MAGEOS=NO`**: Installs Magento from https://repo.magento.com/
+     - **If `PLATFORM_NAME=mage-os`**: Installs Mage-OS from https://repo.mage-os.org/
+     - **If `PLATFORM_NAME=magento`**: Installs Magento from https://repo.magento.com/
    - Installs sample data (if `INSTALL_SAMPLE_DATA=YES`)
    - Installs fresh instance or uses existing database
    - Installs Awesome Claude Agents from GitHub
@@ -259,11 +259,11 @@ Then restart the Codespace. The `start.sh` script will detect the missing flag a
 
 ### Choosing Between Mage-OS and Magento
 
-By default, this environment installs **Mage-OS** (set via `USE_MAGEOS=YES`). To install Magento instead:
+By default, this environment installs **Mage-OS** (set via `PLATFORM_NAME=mage-os`). To install Magento instead:
 
 1. Edit `.devcontainer/devcontainer.json`:
    ```json
-   "USE_MAGEOS": "NO"
+   "PLATFORM_NAME": "magento"
    ```
 
 2. Ensure you have configured the required Magento Composer credentials:
@@ -318,10 +318,10 @@ Sample data provides products, categories, and content for testing and developme
 All environment variables can be customized in `.devcontainer/devcontainer.json` under `containerEnv`:
 
 **Key Environment Variables**:
-- `USE_MAGEOS` - Set to "YES" for Mage-OS, "NO" for Magento (default: "YES")
+- `PLATFORM_NAME` - Set to "mage-os" for Mage-OS, "magento" for Magento (default: "mage-os")
 - `INSTALL_MAGENTO` - Set to "YES" for fresh install, "NO" to use existing database (default: "YES")
 - `INSTALL_SAMPLE_DATA` - Set to "YES" to install sample data, "NO" to skip (default: "YES")
-- `MAGENTO_VERSION` - Magento version to install when `USE_MAGEOS=NO` (default: "2.4.7-p5")
+- `MAGENTO_VERSION` - Magento version to install when `PLATFORM_NAME=magento` (default: "2.4.8-p3")
 - `MAGENTO_ADMIN_USERNAME` - Admin username (default: "admin")
 - `MAGENTO_ADMIN_PASSWORD` - Admin password (default: "password1")
 - `MAGENTO_ADMIN_EMAIL` - Admin email (default: "admin@example.com")
@@ -339,3 +339,4 @@ For issues with:
 - **Magento**: Refer to [Mage-OS Documentation](https://mage-os.org/)
 - **Hyvä Theme**: Refer to [Hyvä Documentation](https://docs.hyva.io/)
 - **This Setup**: Open an issue in this repository
+- **Learning Course with optional Slack channel support [Free Course](https://develo.teachable.com/p/codespaces-magento-mageos-hyva)

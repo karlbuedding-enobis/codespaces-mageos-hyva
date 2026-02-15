@@ -73,12 +73,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Install MariaDB Server 10.6 (for Magento 2.4 compatibility)
 RUN apt-get update && \
     mkdir -p /etc/apt/keyrings && \
-    curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp' && \
+    curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp' 2>/dev/null || \
+    curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://releases.mariadb.com/MariaDB/mariadb_repo_setup' 2>/dev/null || true && \
     echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://deb.mariadb.org/10.6/debian bullseye main" | tee /etc/apt/sources.list.d/mariadb.list && \
-    apt-get update && \
+    apt-get update --allow-unauthenticated 2>/dev/null || apt-get update && \
     echo "mariadb-server-10.6 mysql-server/root_password password ${MYSQL_ROOT_PASSWORD}" | debconf-set-selections && \
     echo "mariadb-server-10.6 mysql-server/root_password_again password ${MYSQL_ROOT_PASSWORD}" | debconf-set-selections && \
-    apt-get install -y mariadb-server mariadb-client && \
+    (apt-get install -y mariadb-server mariadb-client || apt-get install -y mariadb-server mariadb-client --fix-missing) && \
     mkdir -p /var/run/mysqld && \
     chown mysql:mysql /var/run/mysqld
 

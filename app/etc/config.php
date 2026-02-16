@@ -350,12 +350,23 @@ return [
         'Magento_WishlistSampleData' => 1,
         'Aligent_Pci4Compatibility' => 1,
         'Creatuity_Interception' => 1,
+        'Hyva_Theme' => 1,
+        'Hyva_CompatModuleFallback' => 1,
+        'Hyva_Email' => 1,
+        'Hyva_GraphqlTokens' => 1,
+        'Hyva_GraphqlViewModel' => 1,
+        'Hyva_MollieThemeBundle' => 1,
+        'Hyva_OrderCancellationWebapi' => 1,
+        'Hyva_BaseLayoutReset' => 1,
+        'Hyva_ThemeFallback' => 1,
         'MageOS_AutomaticTranslation' => 1,
         'MageOS_InventoryReservationsGrid' => 1,
         'MageOS_MetaRobotsTag' => 1,
         'MageOS_PageBuilderTemplateImportExport' => 1,
         'MageOS_PageBuilderWidget' => 1,
         'MageOS_ThemeAdminhtmlSwitcher' => 1,
-        'MageOS_ThemeOptimization' => 1
+        'MageOS_ThemeOptimization' => 1,
+        'Mollie_Payment' => 1,
+        'Mollie_HyvaCompatibility' => 1
     ]
 ];
